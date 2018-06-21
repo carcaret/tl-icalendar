@@ -82,5 +82,6 @@ This script is ready for Heroku + Amazon S3 deployment.
 1. Create S3 bucket with public read access and a user with full S3 access permissions. 
 2. Change the `BUCKET_NAME` variable in the script to match your S3 bucket name.
 2. Create new Heroku app and set your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` config vars.
-3. Push the script to heroku master (it will run once after that so check your S3 bucket for the calendar files).
+3. Push the code to heroku master to start deloyment.
+5. Run `heroku run python tl_icalendar.py` and check your S3 buckets for calendars.
 4. Set up the Heroku scheduler to run `python tl_calendar.py` at your desired interval.
