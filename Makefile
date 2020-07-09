@@ -1,10 +1,13 @@
 SRC=${CURDIR}/src
 DIST=$(CURDIR)/dist
-ZIP_FILE=$(shell basename $(CURDIR)).zip
+
+.PHONY: deploy
+deploy:
+	make bundle terraform
 
 .PHONY: bundle
 bundle:
-	make clean dependencies copy zip
+	make clean dependencies copy
 
 .PHONY: clean
 clean:
@@ -22,6 +25,6 @@ dependencies:
 copy:
 	cp -r ${SRC}/*.py ${DIST}
 
-.PHONY: zip
-zip:
-	cd ${DIST} && zip -r ${ZIP_FILE} *
+.PHONY: terraform
+terraform:
+	$(MAKE) -C tf terraform

@@ -1,5 +1,5 @@
-from src.tl_api import liquipediapy
-from src.constants import BASE_URL
+from tl_api import liquipediapy
+from constants import BASE_URL
 
 
 class starcraft2():

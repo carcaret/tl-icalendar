@@ -7,7 +7,7 @@ import requests
 from icalendar import Calendar, Event
 from slugify import slugify
 
-from src.starcraft2 import starcraft2
+from starcraft2 import starcraft2
 
 
 CALENDAR_URL = 'http://www.teamliquid.net/calendar/xml/calendar.xml'
@@ -20,6 +20,7 @@ SC2_EVENT_TYPE = 'StarCraft 2'
 def get_xml_calendar(url):
     response = requests.get(url)
     return response.content
+
 
 
 def parse_xml_calendar(calendar):
@@ -144,7 +145,7 @@ def run():
     print('\tDone. Check `{}`'.format(f))
 
     print('Uploading to S3 ...')
-    #upload_calendars()
+    upload_calendars()
 
     print('GG')
 
