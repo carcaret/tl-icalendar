@@ -7,11 +7,14 @@ import requests
 from icalendar import Calendar, Event
 from slugify import slugify
 
+from starcraft2 import starcraft2
+
 
 CALENDAR_URL = 'http://www.teamliquid.net/calendar/xml/calendar.xml'
 TIMEZONE = 'Asia/Seoul'  # Must match the timezone used in the XML calendar.
 STATIC_ROOT = os.path.join('calendars')
 BUCKET_NAME = 'tl-icalendar'
+SC2_EVENT_TYPE = 'StarCraft 2'
 
 
 def get_xml_calendar(url):
@@ -21,24 +24,32 @@ def get_xml_calendar(url):
 
 def parse_xml_calendar(calendar):
     events = []
-    event_types = []
+    premier_tournaments_urls = starcraft2().get_premier_tournaments()
 
     for month in ET.fromstring(calendar):
         for day in month:
             for event in day:
-                event_year = month.attrib['year']
-                event_month = month.attrib['num']
-                event_day = day.attrib['num']
-                event_hour = event.attrib['hour']
-                event_minute = event.attrib['minute']
-
                 try:
                     event_type = event.find('type').text
                 except AttributeError:
                     event_type = 'N/A'
 
-                if event_type not in event_types:
-                    event_types.append(event_type)
+                if event_type != SC2_EVENT_TYPE:
+                    continue
+
+                try:
+                    event_url = event.find('liquipedia-url').text
+                except AttributeError:
+                    event_url = 'N/A'
+
+                if event_url not in premier_tournaments_urls:
+                    continue
+
+                event_year = month.attrib['year']
+                event_month = month.attrib['num']
+                event_day = day.attrib['num']
+                event_hour = event.attrib['hour']
+                event_minute = event.attrib['minute']
 
                 try:
                     event_title = event.find('title').text
@@ -55,11 +66,6 @@ def parse_xml_calendar(calendar):
                 except AttributeError:
                     event_id = 'N/A'
 
-                try:
-                    event_url = event.find('liquipedia-url').text
-                except AttributeError:
-                    event_url = 'N/A'
-
                 events.append({
                     'year': int(event_year),
                     'month': int(event_month),
@@ -73,7 +79,7 @@ def parse_xml_calendar(calendar):
                     'url': event_url
                 })
 
-    return events, event_types
+    return events
 
 
 def create_icalendar(events, event_type):
@@ -127,19 +133,18 @@ def run():
     xml_calendar = get_xml_calendar(CALENDAR_URL)
 
     print('Parsing XML calendar ...')
-    events, event_types = parse_xml_calendar(xml_calendar)
+    events = parse_xml_calendar(xml_calendar)
 
-    for event_type in event_types:
-        print('Creating `{}` iCalendar ...'.format(event_type))
-        icalendar = create_icalendar(events, event_type)
-        
-        print('\tWriting iCalendar to file ...')
-        f = write_icalendar_to_file(icalendar, event_type)
+    print('Creating `{}` iCalendar ...'.format(SC2_EVENT_TYPE))
+    icalendar = create_icalendar(events, SC2_EVENT_TYPE)
 
-        print('\tDone. Check `{}`'.format(f))
+    print('\tWriting iCalendar to file ...')
+    f = write_icalendar_to_file(icalendar, SC2_EVENT_TYPE)
+
+    print('\tDone. Check `{}`'.format(f))
 
     print('Uploading to S3 ...')
-    upload_calendars()
+    #upload_calendars()
 
     print('GG')
 
