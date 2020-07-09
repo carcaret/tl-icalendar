@@ -31,19 +31,12 @@ Below steps describe how to use the calendars with Google Calendar.
 
 ## Development
 
-Create virtualenv with Python 3 for your project. Example using virtualenvwrapper:
-
-```
-mkvirtualenv -p python3 tl-icalendar
-workon tl-icalendar
-```
-
 Clone the project and install project requirements into your virtualenv.
 
 ```
-git clone https://github.com/mckdev/tl-icalendar/
+git clone https://github.com/carcaret/tl-icalendar.git
 cd tl-icalendar
-pip install -r requirements.txt
+pipenv install
 ```
 
 ### Configure Amazon S3 upload (optional)
