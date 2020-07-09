@@ -1,7 +1,7 @@
-import exceptions as ex
+from src import exceptions as ex
 from bs4 import BeautifulSoup
 import requests
-from constants import APP_NAME, BASE_URL
+from src.constants import APP_NAME, BASE_URL
 
 
 class liquipediapy():

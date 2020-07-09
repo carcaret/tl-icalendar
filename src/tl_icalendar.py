@@ -7,7 +7,7 @@ import requests
 from icalendar import Calendar, Event
 from slugify import slugify
 
-from starcraft2 import starcraft2
+from src.starcraft2 import starcraft2
 
 
 CALENDAR_URL = 'http://www.teamliquid.net/calendar/xml/calendar.xml'
@@ -123,7 +123,7 @@ def upload_calendars():
     import boto3
     s3 = boto3.resource('s3')
 
-    for filename in os.listdir('calendars/'):
+    for filename in os.listdir('../calendars/'):
         data = open('calendars/' + filename, 'rb')
         s3.Bucket(BUCKET_NAME).put_object(Key=filename, Body=data)
 
