@@ -149,5 +149,10 @@ def run():
     print('GG')
 
 
+def event_handler(event, context):
+    run()
+    return True
+
+
 if __name__ == '__main__':
     run()

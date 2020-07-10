@@ -30,7 +30,7 @@ resource aws_lambda_function article_status {
   filename = data.archive_file.lambda_package.output_path
   function_name = "${var.project-name}_creator"
   role = aws_iam_role.lambda_role.arn
-  handler = "tl_icalendar.run"
+  handler = "tl_icalendar.event_handler"
   source_code_hash = data.archive_file.lambda_package.output_base64sha256
   runtime = "python3.6"
   memory_size = "128"
