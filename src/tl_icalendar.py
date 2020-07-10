@@ -124,7 +124,7 @@ def upload_calendars():
     s3 = boto3.resource('s3')
 
     for filename in os.listdir(STATIC_ROOT):
-        data = open(STATIC_ROOT + filename, 'rb')
+        data = open(STATIC_ROOT + '/' + filename, 'rb')
         s3.Bucket(BUCKET_NAME).put_object(Key=filename, Body=data)
 
 
