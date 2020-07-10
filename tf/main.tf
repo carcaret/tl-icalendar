@@ -82,3 +82,22 @@ resource aws_iam_role_policy_attachment put-calendar-object-attachment {
   role = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.put-calendar-object-policy.arn
 }
+
+resource aws_cloudwatch_event_rule calendar-trigger {
+  name        = "${aws_lambda_function.create-calendar.function_name}-trigger"
+  schedule_expression = "cron(0 0 ? * * *)"
+}
+
+resource aws_cloudwatch_event_target calendar-trigger-target {
+  target_id = "${aws_lambda_function.create-calendar.function_name}-trigger"
+  arn = aws_lambda_function.create-calendar.arn
+  rule = aws_cloudwatch_event_rule.calendar-trigger.name
+}
+
+resource aws_lambda_permission calendar-trigger-permission {
+  statement_id = "AllowExecutionFromCloudWatch"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.create-calendar.function_name
+  principal = "events.amazonaws.com"
+  source_arn = aws_cloudwatch_event_rule.calendar-trigger.arn
+}
