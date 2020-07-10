@@ -12,7 +12,7 @@ from starcraft2 import starcraft2
 
 CALENDAR_URL = 'http://www.teamliquid.net/calendar/xml/calendar.xml'
 TIMEZONE = 'Asia/Seoul'  # Must match the timezone used in the XML calendar.
-STATIC_ROOT = os.path.join('calendars')
+STATIC_ROOT = os.path.join('/tmp')
 SC2_EVENT_TYPE = 'StarCraft 2'
 BUCKET_NAME = os.environ['BUCKET_NAME']
 
@@ -123,8 +123,8 @@ def upload_calendars():
     import boto3
     s3 = boto3.resource('s3')
 
-    for filename in os.listdir('../calendars/'):
-        data = open('calendars/' + filename, 'rb')
+    for filename in os.listdir(STATIC_ROOT):
+        data = open(STATIC_ROOT + filename, 'rb')
         s3.Bucket(BUCKET_NAME).put_object(Key=filename, Body=data)
 
 
