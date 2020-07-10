@@ -17,7 +17,7 @@ data aws_iam_policy_document bucket-public-read {
 
 resource aws_s3_bucket sc2-calendar {
   bucket = var.bucket-name
-  acl = "public-read"
+  acl = "private"
   policy = data.aws_iam_policy_document.bucket-public-read.json
 }
 
