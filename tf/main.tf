@@ -1,15 +1,35 @@
+data aws_iam_policy_document bucket-public-read {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetObject"
+    ]
+    resources = [
+      "arn:aws:s3:::${var.bucket-name}/*"
+    ]
+    principals {
+      identifiers = [
+        "*"]
+      type = "AWS"
+    }
+  }
+}
+
 resource aws_s3_bucket sc2-calendar {
   bucket = var.bucket-name
   acl = "public-read"
+  policy = data.aws_iam_policy_document.bucket-public-read.json
 }
 
 data aws_iam_policy_document assume_role {
   statement {
     effect = "Allow"
-    actions = ["sts:AssumeRole"]
+    actions = [
+      "sts:AssumeRole"]
     principals {
       type = "Service"
-      identifiers = ["lambda.amazonaws.com"]
+      identifiers = [
+        "lambda.amazonaws.com"]
     }
   }
 }
@@ -43,8 +63,8 @@ resource aws_lambda_function create-calendar {
 
 data aws_iam_policy_document put_object {
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "s3:PutObject"
     ]
     resources = [
@@ -59,6 +79,6 @@ resource aws_iam_policy put-calendar-object-policy {
 }
 
 resource aws_iam_role_policy_attachment put-calendar-object-attachment {
-  role       = aws_iam_role.lambda_role.name
+  role = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.put-calendar-object-policy.arn
 }
