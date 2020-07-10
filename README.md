@@ -4,18 +4,11 @@ Python script which converts TeamLiquid's XML calendar into iCalendar format to 
 
 ## How it works
 
-The script generates iCalendar files for every event type in TeamLiquid's calendar and uploads them into Amazon S3 bucket.
+The script generates iCalendar files for Premier Starcraft 2 Tournaments in TeamLiquid's calendar and uploads them into Amazon S3 bucket.
 
-Currently available calendars (updated every 60 minutes):
+Currently available calendars (updated every day at midnight):
 
-- https://s3.amazonaws.com/tl-icalendar/starcraft-2.ics
-- https://s3.amazonaws.com/tl-icalendar/brood-war.ics
-- https://s3.amazonaws.com/tl-icalendar/cs-go.ics
-- https://s3.amazonaws.com/tl-icalendar/overwatch.ics
-- https://s3.amazonaws.com/tl-icalendar/heroes-of-the-storm.ics
-- https://s3.amazonaws.com/tl-icalendar/other.ics
-
-If new event type appears in TeamLiquid calendar, the script will automatically create a new calendar for it.
+- https://carcaret-sc2-calendar.s3.eu-central-1.amazonaws.com/starcraft-2.ics
 
 ## Using the calendars with Google Calendar
 
@@ -58,7 +51,7 @@ You will also need to create a bucket with public read access and modify `BUCKET
 
 ### Working without S3
 
-The calendars are always stored locally in `calendars/` directory, so if you don't want to use S3 upload, simply comment out the `upload_calendars()` line inside `run()` function.
+The calendars are always stored locally in `/tmp` directory, so if you don't want to use S3 upload, simply comment out the `upload_calendars()` line inside `run()` function.
 
 ### Running the script
 
@@ -68,13 +61,10 @@ Run the script with:
 python tl_icalendar.py
 ```
 
-### Deploy to Heroku & S3
+### Deploy to AWS
 
-This script is ready for Heroku + Amazon S3 deployment.
+Run the Makefile:
 
-1. Create S3 bucket with public read access and a user with full S3 access permissions. 
-2. Change the `BUCKET_NAME` variable in the script to match your S3 bucket name.
-2. Create new Heroku app and set your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` config vars.
-3. Push the code to heroku master to start deloyment.
-5. Run `heroku run python tl_icalendar.py` and check your S3 buckets for calendars.
-4. Set up the Heroku scheduler to run `python tl_calendar.py` at your desired interval.
+```
+make deploy
+```
