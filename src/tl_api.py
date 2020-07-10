@@ -1,4 +1,4 @@
-from src import exceptions as ex
+from exceptions import RequestsException
 from bs4 import BeautifulSoup
 import requests
 from constants import APP_NAME, BASE_URL
@@ -28,4 +28,4 @@ class liquipediapy():
                 soup, __ = self.parse(redirect_value)
                 return soup, redirect_value
         else:
-            raise ex.RequestsException(response.json(), response.status_code)
+            raise RequestsException(response.json(), response.status_code)
