@@ -1,5 +1,5 @@
 resource aws_s3_bucket sc2-calendar {
-  bucket = "carcaret-sc2-calendar"
+  bucket = var.bucket-name
   acl = "public-read"
 }
 
@@ -35,4 +35,9 @@ resource aws_lambda_function article_status {
   runtime = "python3.6"
   memory_size = "128"
   timeout = 30
+  environment {
+    variables = {
+      BUCKET_NAME = var.bucket-name
+    }
+  }
 }

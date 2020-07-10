@@ -13,14 +13,13 @@ from starcraft2 import starcraft2
 CALENDAR_URL = 'http://www.teamliquid.net/calendar/xml/calendar.xml'
 TIMEZONE = 'Asia/Seoul'  # Must match the timezone used in the XML calendar.
 STATIC_ROOT = os.path.join('calendars')
-BUCKET_NAME = 'tl-icalendar'
 SC2_EVENT_TYPE = 'StarCraft 2'
+BUCKET_NAME = os.environ['BUCKET_NAME']
 
 
 def get_xml_calendar(url):
     response = requests.get(url)
     return response.content
-
 
 
 def parse_xml_calendar(calendar):
