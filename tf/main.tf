@@ -115,5 +115,6 @@ resource aws_cloudwatch_metric_alarm lambda-error-alarm {
   period                    = "60"
   statistic                 = "SampleCount"
   threshold                 = "1"
+  treat_missing_data        = "notBreaching"
   alarm_actions             = [ aws_sns_topic.alarms.arn ]
 }
