@@ -5,3 +5,4 @@ calendars/
 dist
 .aws/
 .terraform/
+out/

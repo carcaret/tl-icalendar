@@ -37,7 +37,7 @@ data aws_iam_policy_document assume-role {
 data archive_file lambda_package {
   type = "zip"
   source_dir = "${path.module}/../dist"
-  output_path = "${path.module}/../dist/lambda-package.zip"
+  output_path = "${path.module}/../out/lambda-package.zip"
 }
 
 resource aws_iam_role lambda-role {
