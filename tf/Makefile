@@ -1,4 +1,4 @@
 .PHONY: terraform
 terraform:
 	terraform init
-	terraform apply -auto-approve
+	terraform apply -var-file="local.tfvars" -auto-approve

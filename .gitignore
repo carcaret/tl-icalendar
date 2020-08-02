@@ -6,3 +6,4 @@ dist
 .aws/
 .terraform/
 out/
+local.tfvars

@@ -1,6 +1,6 @@
 provider "aws" {
   region  = var.region
-  shared_credentials_file = "/home/carlosc/git/stuff/tl-icalendar/.aws/credentials"
+  shared_credentials_file = "/Users/carcaret/IdeaProjects/tl-icalendar/.aws/credentials"
 }
 
 terraform {
@@ -10,6 +10,6 @@ terraform {
     bucket  = "carcaret-terraform-state"
     key     = "tl-icalendar/terraform.tfstate"
     region  = "eu-central-1"
-    shared_credentials_file = "/home/carlosc/git/stuff/tl-icalendar/.aws/credentials"
+    shared_credentials_file = "/Users/carcaret/IdeaProjects/tl-icalendar/.aws/credentials"
   }
 }

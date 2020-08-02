@@ -54,6 +54,9 @@ resource aws_lambda_function create-calendar {
   runtime = "python3.6"
   memory_size = "128"
   timeout = 30
+  dead_letter_config {
+    target_arn = aws_sns_topic.alarms.arn
+  }
   environment {
     variables = {
       BUCKET_NAME = var.bucket-name
@@ -83,6 +86,28 @@ resource aws_iam_role_policy_attachment put-calendar-object-attachment {
   policy_arn = aws_iam_policy.put-calendar-object-policy.arn
 }
 
+data aws_iam_policy_document publish-sns {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sns:Publish"
+    ]
+    resources = [
+      "arn:aws:sns:${var.region}:${var.account}:${aws_sns_topic.alarms.arn}"
+    ]
+  }
+}
+
+resource aws_iam_policy publish-sns-policy {
+  name = "${var.project-name}_publish-sns-policy"
+  policy = data.aws_iam_policy_document.publish-sns.json
+}
+
+resource aws_iam_role_policy_attachment publish-sns-attachment {
+  role = aws_iam_role.lambda-role.name
+  policy_arn = aws_iam_policy.publish-sns-policy.arn
+}
+
 resource aws_cloudwatch_event_rule calendar-trigger {
   name        = "${aws_lambda_function.create-calendar.function_name}-trigger"
   schedule_expression = "cron(0 0 ? * * *)"
@@ -104,17 +129,4 @@ resource aws_lambda_permission calendar-trigger-permission {
 
 resource aws_sns_topic alarms {
   name = "${var.project-name}-alarms"
-}
-
-resource aws_cloudwatch_metric_alarm lambda-error-alarm {
-  alarm_name                = "${aws_lambda_function.create-calendar.function_name}-error-alarm"
-  comparison_operator       = "GreaterThanOrEqualToThreshold"
-  evaluation_periods        = "1"
-  metric_name               = "Errors"
-  namespace                 = "AWS/Lambda"
-  period                    = "60"
-  statistic                 = "SampleCount"
-  threshold                 = "1"
-  treat_missing_data        = "notBreaching"
-  alarm_actions             = [ aws_sns_topic.alarms.arn ]
 }
