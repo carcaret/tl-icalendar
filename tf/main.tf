@@ -93,7 +93,7 @@ data aws_iam_policy_document publish-sns {
       "sns:Publish"
     ]
     resources = [
-      "arn:aws:sns:${var.region}:${var.account}:${aws_sns_topic.alarms.arn}"
+      aws_sns_topic.alarms.arn
     ]
   }
 }

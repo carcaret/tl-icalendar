@@ -1,5 +1,3 @@
-variable account {}
-
 variable region {
   default = "eu-central-1"
 }
