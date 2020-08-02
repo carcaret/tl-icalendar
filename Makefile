@@ -3,7 +3,7 @@ DIST=$(CURDIR)/dist
 
 .PHONY: deploy
 deploy:
-	make bundle terraform
+	make bundle terraform clean
 
 .PHONY: bundle
 bundle:
@@ -13,13 +13,13 @@ bundle:
 clean:
 	echo $(CURDIR)
 	rm -rf ${DIST}
-	rm -f ${ZIP_FILE}
+	rm -f requirements.txt
+	rm -rf out
 
 .PHONY: dependencies
 dependencies:
 	pipenv lock -r > requirements.txt
 	pip install -r requirements.txt --no-deps -t ${DIST}
-	rm requirements.txt
 
 .PHONY: copy
 copy:
