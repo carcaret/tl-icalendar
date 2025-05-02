@@ -36,4 +36,4 @@ wrapt = ">=1.11.1"
 Unidecode = ">=1.0.23"
 
 [requires]
-python_version = "3.6"
+python_version = "3.13"

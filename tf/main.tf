@@ -51,7 +51,7 @@ resource aws_lambda_function create-calendar {
   role = aws_iam_role.lambda-role.arn
   handler = "tl_icalendar.event_handler"
   source_code_hash = data.archive_file.lambda_package.output_base64sha256
-  runtime = "python3.6"
+  runtime = "python3.13"
   memory_size = "128"
   timeout = 30
   dead_letter_config {
