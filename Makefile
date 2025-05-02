@@ -18,7 +18,7 @@ clean:
 
 .PHONY: dependencies
 dependencies:
-	pipenv lock -r > requirements.txt
+	pipenv requirements > requirements.txt
 	pip install -r requirements.txt --no-deps -t ${DIST}
 
 .PHONY: copy
