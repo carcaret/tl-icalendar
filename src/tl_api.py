@@ -19,7 +19,7 @@ class liquipediapy():
             try:
                 page_html = response.json()['parse']['text']['*']
             except KeyError:
-                raise ex.RequestsException(response.json(), response.status_code)
+                raise RequestsException(response.json(), response.status_code)
             soup = BeautifulSoup(page_html, features="html.parser")
             redirect = soup.find('ul', class_="redirectText")
             if redirect is None:

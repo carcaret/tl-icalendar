@@ -24,7 +24,7 @@ def get_xml_calendar(url):
 
 def parse_xml_calendar(calendar):
     events = []
-    s_tier_tournaments_titles = starcraft2().get_s_tier_tournaments()
+    s_tier_tournaments_base_urls = starcraft2().get_s_tier_tournaments()
 
     for month in ET.fromstring(calendar):
         for day in month:
@@ -38,11 +38,24 @@ def parse_xml_calendar(calendar):
                     continue
 
                 try:
+                    event_url = event.find('liquipedia-url').text
+                except AttributeError:
+                    event_url = 'N/A'
+
+                is_s_tier_tournament = False
+                for tournament_url in s_tier_tournaments_base_urls:
+                    if tournament_url in event_url:
+                        is_s_tier_tournament = True
+
+                if is_s_tier_tournament is False:
+                    continue
+
+                try:
                     event_title = event.find('title').text
                 except AttributeError:
                     event_title = 'N/A'
 
-                if event_title not in s_tier_tournaments_titles:
+                if event_title == 'Replay Cast':
                     continue
 
                 event_year = month.attrib['year']
@@ -55,11 +68,6 @@ def parse_xml_calendar(calendar):
                     event_description = event.find('description').text
                 except AttributeError:
                     event_description = 'N/A'
-
-                try:
-                    event_url = event.find('liquipedia-url').text
-                except AttributeError:
-                    event_url = 'N/A'
 
                 try:
                     event_id = event.find('event-id').text
@@ -78,7 +86,6 @@ def parse_xml_calendar(calendar):
                     'id': event_id,
                     'url': event_url
                 })
-
     return events
 
 
