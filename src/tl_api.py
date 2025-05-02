@@ -2,6 +2,7 @@ from exceptions import RequestsException
 from bs4 import BeautifulSoup
 import requests
 from constants import APP_NAME, BASE_URL
+from urllib.parse import quote
 
 
 class liquipediapy():
@@ -12,13 +13,14 @@ class liquipediapy():
 
     def parse(self, page):
         url = self.__base_url + 'action=parse&format=json&page=' + page
+        print(url)
         response = requests.get(url, headers=self.__headers)
         if response.status_code == 200:
             try:
                 page_html = response.json()['parse']['text']['*']
             except KeyError:
                 raise ex.RequestsException(response.json(), response.status_code)
-            soup = BeautifulSoup(page_html, features="lxml")
+            soup = BeautifulSoup(page_html, features="html.parser")
             redirect = soup.find('ul', class_="redirectText")
             if redirect is None:
                 return soup, None

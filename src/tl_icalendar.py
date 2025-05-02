@@ -24,7 +24,7 @@ def get_xml_calendar(url):
 
 def parse_xml_calendar(calendar):
     events = []
-    premier_tournaments_urls = starcraft2().get_premier_tournaments()
+    # premier_tournaments_urls = starcraft2().get_premier_tournaments()
 
     for month in ET.fromstring(calendar):
         for day in month:
@@ -42,8 +42,8 @@ def parse_xml_calendar(calendar):
                 except AttributeError:
                     event_url = 'N/A'
 
-                if event_url not in premier_tournaments_urls:
-                    continue
+                # if event_url not in premier_tournaments_urls:
+                #     continue
 
                 event_year = month.attrib['year']
                 event_month = month.attrib['num']
