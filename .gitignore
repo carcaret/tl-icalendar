@@ -5,6 +5,7 @@ calendars/
 dist
 .aws/
 .terraform/
+.terraform.lock.hcl
 out/
 local.tfvars
 requirements.txt

@@ -5,7 +5,6 @@ terraform {
     }
     aws = {
       source = "hashicorp/aws"
-      shared_credentials_file = "/Users/carcaret/IdeaProjects/tl-icalendar/.aws/credentials"
     }
   }
 
@@ -13,10 +12,10 @@ terraform {
     bucket  = "carcaret-terraform-state"
     key     = "tl-icalendar/terraform.tfstate"
     region  = "eu-central-1"
-    shared_credentials_file = "/Users/carcaret/IdeaProjects/tl-icalendar/.aws/credentials"
+    shared_credentials_file = "/home/carcaret/.aws/credentials"
   }
 
-  required_version = ">= 0.13"
+  required_version = ">= 1.11.4"
 }
 
 provider "aws" {
