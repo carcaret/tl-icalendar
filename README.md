@@ -24,46 +24,49 @@ Below steps describe how to use the calendars with Google Calendar.
 
 ## Development
 
-Clone the project and install project requirements into your virtualenv.
+### Devcontainer (recommended)
+
+The project includes a devcontainer with Python, Terraform, and the AWS CLI pre-installed. Open the project in VSCode and when prompted, click **Reopen in Container**.
+
+#### First-time AWS login setup
+
+AWS authentication uses IAM Identity Center (SSO). You need to set it up once in your AWS account before using it:
+
+1. Go to the AWS Console → **IAM Identity Center** → Enable it
+2. Create a user (Settings → Users → Add user) and assign it to your account with the desired permission set (e.g. `AdministratorAccess`)
+3. Note the **AWS access portal URL** shown in IAM Identity Center dashboard (e.g. `https://something.awsapps.com/start`)
+
+Then, inside the devcontainer, configure the SSO profile once:
 
 ```
-git clone https://github.com/carcaret/tl-icalendar.git
-cd tl-icalendar
-pipenv install
+aws configure sso
 ```
 
-### Configure Amazon S3 upload (optional)
+It will ask for the portal URL, region (`eu-central-1`), and a profile name. Use `default` as the profile name so terraform and boto3 pick it up automatically.
 
-If you want the S3 upload to work, create AWS configuration file in your user directory.
+#### Logging in
 
-- Linux: `~/.aws/credentials`
-- Windows: `C:\Users\username\.aws\credentials`
-
-The content of the `credentials` file should look like this:
+Every time you open the devcontainer, authenticate with:
 
 ```
-[default]
-aws_access_key_id =  YOUR_AWS_ACCESS_KEY_ID
-aws_secret_access_key = YOUR_AWS_SECRET_ACCESS_KEY
+aws sso login
 ```
 
-You will also need to create a bucket with public read access and modify `BUCKET_NAME` variable inside `tl-icalendar.py` to match your S3 bucket name.
+This opens a browser tab — approve the login and you're ready. Credentials live only in the container and expire when it stops.
 
-### Working without S3
+#### Verify login
 
-The calendars are always stored locally in `/tmp` directory, so if you don't want to use S3 upload, simply comment out the `upload_calendars()` line inside `run()` function.
+```
+aws sts get-caller-identity
+```
 
 ### Running the script
 
-Run the script with:
-
 ```
-python tl_icalendar.py
+python src/tl_icalendar.py
 ```
 
 ### Deploy to AWS
-
-Run the Makefile:
 
 ```
 make deploy

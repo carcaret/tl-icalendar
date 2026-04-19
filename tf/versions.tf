@@ -12,7 +12,6 @@ terraform {
     bucket  = "carcaret-terraform-state"
     key     = "tl-icalendar/terraform.tfstate"
     region  = "eu-central-1"
-    shared_credentials_file = "/home/carcaret/.aws/credentials"
   }
 
   required_version = ">= 1.11.4"
