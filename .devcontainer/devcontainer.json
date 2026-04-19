@@ -20,6 +20,6 @@
       ]
     }
   },
-  "postCreateCommand": "pip install pipenv && pipenv install --dev",
+  "postCreateCommand": "pip install pipenv && pipenv install --dev && mkdir -p ~/.aws && cat >> ~/.aws/config << 'EOF'\n[default]\nsso_start_url = https://d-9967466958.awsapps.com/start\nsso_region = eu-central-1\nsso_account_id = 979200226534\nsso_role_name = AdministratorAccess\nregion = eu-central-1\nEOF",
   "remoteUser": "vscode"
 }
