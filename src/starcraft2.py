@@ -1,17 +1,23 @@
-from tl_api import liquipediapy
-from constants import BASE_URL
+import requests
+from constants import APP_NAME, BASE_URL
 
 
-class starcraft2():
-
-    def __init__(self):
-        self.liquipedia = liquipediapy('starcraft2')
-
-    def get_s_tier_tournaments(self):
-        soup, __ = self.liquipedia.parse('S-Tier_Tournaments')
-        tournament_base_urls = []
-        tournament_rows = soup.find_all('div', class_='gridRow')
-        for row in tournament_rows:
-            url = row.find('a').get('href')
-            tournament_base_urls.append(BASE_URL + url)
-        return tournament_base_urls
+def get_s_tier_tournaments():
+    response = requests.get(
+        BASE_URL + '/starcraft2/api.php',
+        params={
+            'action': 'query',
+            'list': 'categorymembers',
+            'cmtitle': 'Category:S-Tier_Tournaments',
+            'cmlimit': '50',
+            'cmsort': 'timestamp',
+            'cmdir': 'desc',
+            'format': 'json',
+        },
+        headers={'User-Agent': APP_NAME, 'Accept-Encoding': 'gzip'},
+    )
+    members = response.json()['query']['categorymembers']
+    return [
+        BASE_URL + '/starcraft2/' + m['title'].replace(' ', '_')
+        for m in members
+    ]

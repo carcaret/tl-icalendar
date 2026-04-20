@@ -7,7 +7,7 @@ import requests
 from icalendar import Calendar, Event
 from slugify import slugify
 
-from starcraft2 import starcraft2
+from starcraft2 import get_s_tier_tournaments
 
 
 CALENDAR_URL = 'http://www.teamliquid.net/calendar/xml/calendar.xml'
@@ -24,7 +24,7 @@ def get_xml_calendar(url):
 
 def parse_xml_calendar(calendar):
     events = []
-    s_tier_tournaments_base_urls = starcraft2().get_s_tier_tournaments()
+    s_tier_tournaments_base_urls = get_s_tier_tournaments()
 
     for month in ET.fromstring(calendar):
         for day in month:
