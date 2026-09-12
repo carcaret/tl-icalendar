@@ -1,11 +1,11 @@
-variable region {
+variable "region" {
   default = "eu-central-1"
 }
 
-variable project-name {
-  default = "tl-icalendar"
+variable "project-name" {
+  default = "ics-calendars"
 }
 
-variable bucket-name {
-  default = "carcaret-sc2-calendar"
+variable "bucket-name" {
+  default = "carcaret-calendars"
 }
