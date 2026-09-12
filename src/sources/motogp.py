@@ -1,7 +1,7 @@
 """MotoGP calendar, rebuilt from nixxo's upstream ICS.
 
 The upstream file is usable but not subscribable as-is: it carries no alarms at
-all and encodes the session in the SUMMARY as a code ("[MotoGP] SPR
+all and encodes the session in the SUMMARY as a code ("[MotoGP] RAC
 #SanMarinoGP"). iOS shows the event SUMMARY in the notification (not the
 VALARM DESCRIPTION), so we filter the sessions we care about, rewrite the
 summaries in Spanish and inject the alarms ourselves.
@@ -17,10 +17,11 @@ from icalendar import Alarm, Calendar
 
 from constants import APP_NAME
 
-# Sessions kept in the calendar. Q1 is the knock-out session that starts 25
-# minutes before Q2, so keeping it would only duplicate every warning. Change
-# this one line to change the mix.
-KEPT_SESSION_CODES = ('Q2', 'SPR', 'RAC')
+# Sessions kept in the calendar: the Sunday race only. Change this one line to
+# add qualifying ('Q2') or the Saturday sprint ('SPR') back in; they are
+# labelled in SESSION_LABELS below. Q1 is the knock-out session that starts 25
+# minutes before Q2, so keeping it would only duplicate every warning.
+KEPT_SESSION_CODES = ('RAC',)
 
 # Injected on every surviving event. DISPLAY only: AUDIO and EMAIL support is
 # patchy on iOS.
@@ -43,10 +44,12 @@ SUMMARY_PATTERN = re.compile(
 # for any RACn so it keeps working wherever upstream slips next.
 NUMBERED_RACE_CODE = re.compile(r'^RAC\d+$')
 
+# Suffix added after the series name. The race is the headline event of the
+# weekend, so it carries no qualifier.
 SESSION_LABELS = {
     'Q2': 'Clasificación',
     'SPR': 'Sprint',
-    'RAC': 'Carrera',
+    'RAC': '',
 }
 
 GP_NAMES = {
@@ -74,6 +77,7 @@ GP_NAMES = {
     'ValenciaGP': 'Valencia',
 }
 
+SERIES_NAME = 'MotoGP'
 CALENDAR_NAME = 'MotoGP'
 PRODID = '-//carcaret//MotoGP Calendar//ES'
 REFRESH_INTERVAL = timedelta(hours=12)
@@ -103,7 +107,10 @@ def gp_name(tag):
 
 
 def event_summary(code, tag):
-    return '🏍 {} — {}'.format(SESSION_LABELS[code], gp_name(tag))
+    """Where it is first, then the series: `San Marino — MotoGP`."""
+    summary = '{} — {}'.format(gp_name(tag), SERIES_NAME)
+    label = SESSION_LABELS[code]
+    return '{} {}'.format(summary, label) if label else summary
 
 
 def add_alarms(event, description):

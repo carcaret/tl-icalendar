@@ -4,8 +4,8 @@ Run with: pytest tests/test_integration.py -v
 """
 import pytest
 
-from sources.motogp import (ALARM_OFFSETS, KEPT_SESSION_CODES, SOURCE_URL,
-                            fetch_season, season_years, transform_events)
+from sources.motogp import (ALARM_OFFSETS, fetch_season, season_years,
+                            transform_events)
 from sources.starcraft2 import (CALENDAR_URL, get_s_tier_tournaments,
                                 get_xml_calendar, parse_xml_calendar)
 
@@ -68,23 +68,31 @@ def test_motogp_source_is_available():
     assert fetch_season(season_years()[0]).startswith('BEGIN:VCALENDAR')
 
 
-def test_motogp_keeps_three_sessions_per_round(motogp_events):
-    # Qualifying + sprint + race for every round of the season.
-    assert len(motogp_events) % len(KEPT_SESSION_CODES) == 0
-    assert len(motogp_events) >= 3
+def test_motogp_keeps_one_race_per_round(motogp_events):
+    # A full season is 20+ rounds, one race each.
+    venues = [str(event['summary']) for event in motogp_events]
+    assert len(venues) == len(set(venues))
+    assert len(venues) >= 15
 
 
-def test_motogp_drops_the_knock_out_qualifying(motogp_events):
-    assert not any('Q1' in str(event['summary']) for event in motogp_events)
+def test_motogp_drops_everything_but_the_race(motogp_events):
+    for event in motogp_events:
+        summary = str(event['summary'])
+        assert 'Clasificación' not in summary
+        assert 'Sprint' not in summary
+
+
+def test_motogp_races_are_on_sundays(motogp_events):
+    for event in motogp_events:
+        assert event['dtstart'].dt.weekday() == 6, str(event['summary'])
 
 
 def test_motogp_summaries_are_rewritten(motogp_events):
-    labels = ('Clasificación', 'Sprint', 'Carrera')
     for event in motogp_events:
         summary = str(event['summary'])
-        assert summary.startswith('🏍 ')
-        assert any(label in summary for label in labels)
+        assert summary.endswith(' — MotoGP')
         assert '#' not in summary and '[MotoGP]' not in summary
+        assert all(ord(char) < 0x2500 for char in summary), summary
 
 
 def test_motogp_every_event_has_both_alarms(motogp_events):
@@ -99,9 +107,3 @@ def test_motogp_uids_are_upstream_and_unique(motogp_events):
     uids = [str(event['uid']) for event in motogp_events]
     assert len(set(uids)) == len(uids)
     assert all(uid.endswith('@codeberg.org_nixxo') for uid in uids)
-
-
-def test_motogp_race_count_matches_round_count(motogp_events):
-    races = [e for e in motogp_events if 'Carrera' in str(e['summary'])]
-    rounds = {str(e['summary']).split('—')[1].strip() for e in motogp_events}
-    assert len(races) == len(rounds)

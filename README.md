@@ -9,7 +9,7 @@ Currently available calendars:
 | Calendar | URL | Updated |
 | --- | --- | --- |
 | StarCraft 2 (S-Tier tournaments) | https://carcaret-calendars.s3.eu-central-1.amazonaws.com/starcraft-2.ics | daily, 00:00 UTC |
-| MotoGP (qualifying, sprint, race) | https://carcaret-calendars.s3.eu-central-1.amazonaws.com/motogp.ics | daily, 03:00 UTC |
+| MotoGP (races) | https://carcaret-calendars.s3.eu-central-1.amazonaws.com/motogp.ics | daily, 03:00 UTC |
 
 ## The calendars
 
@@ -25,16 +25,16 @@ Liquipedia's S-Tier category (and dropping replay casts). Event times are in
 Takes [nixxo's MotoGP ICS](https://nixxo.github.io/calendars/) for the current
 season and makes it usable as a subscription:
 
-- **Filters the sessions** down to qualifying (Q2), sprint and race. Q1 is the
-  knock-out session that starts 25 minutes before Q2, so it would only
-  duplicate every warning.
+- **Filters the sessions** down to the Sunday race. Qualifying and the
+  Saturday sprint are dropped; adding them back is one line
+  (`KEPT_SESSION_CODES` at the top of `src/sources/motogp.py`).
 - **Injects two alarms** per event, 60 and 10 minutes before the start, both
   `ACTION:DISPLAY` (audio and email alarms are unevenly supported on iOS).
   Upstream ships no alarms at all.
-- **Rewrites the summaries** in Spanish, from upstream codes like
-  `[MotoGP] SPR #SanMarinoGP` to `🏍 Sprint — San Marino`. iOS shows the event
-  summary in the notification, not the alarm description, so this is what you
-  actually read when your phone buzzes.
+- **Rewrites the summaries**, from upstream codes like
+  `[MotoGP] RAC #SanMarinoGP` to `San Marino — MotoGP`: where it is first, then
+  the series. iOS shows the event summary in the notification, not the alarm
+  description, so this is what you actually read when your phone buzzes.
 - **Normalizes upstream's numbered race codes** (the Catalunya race ships as
   `RAC2` instead of `RAC`).
 - **Keeps the upstream UID** of every event, so when upstream moves a session

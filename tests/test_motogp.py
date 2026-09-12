@@ -5,8 +5,8 @@ import pytest
 from icalendar import Calendar
 
 from sources import motogp
-from sources.motogp import (build, normalize_session_code, season_years,
-                            transform_events)
+from sources.motogp import (build, event_summary, normalize_session_code,
+                            season_years, transform_events)
 
 
 def upstream_event(code, gp, uid, start='20260913T120000Z'):
@@ -52,18 +52,36 @@ def summaries(events):
     return [str(event['summary']) for event in events]
 
 
-def test_discards_q1(events):
-    assert 'uid-q1' not in [str(event['uid']) for event in events]
-    assert not any('Q1' in summary for summary in summaries(events))
-
-
-def test_keeps_qualifying_sprint_and_races(events):
+def test_keeps_only_the_races(events):
     assert summaries(events) == [
-        '🏍 Clasificación — San Marino',
-        '🏍 Sprint — San Marino',
-        '🏍 Carrera — San Marino',
-        '🏍 Carrera — Catalunya',
+        'San Marino — MotoGP',
+        'Catalunya — MotoGP',
     ]
+
+
+def test_discards_qualifying_and_sprint(events):
+    uids = [str(event['uid']) for event in events]
+    assert 'uid-q1' not in uids
+    assert 'uid-q2' not in uids
+    assert 'uid-spr' not in uids
+
+
+def test_summary_puts_the_venue_before_the_series(events):
+    assert str(events[0]['summary']) == 'San Marino — MotoGP'
+
+
+def test_summary_labels_the_non_race_sessions():
+    # Not in the calendar right now, but the labels stay correct in case
+    # KEPT_SESSION_CODES grows again.
+    assert event_summary(
+        'Q2', 'SanMarinoGP') == 'San Marino — MotoGP Clasificación'
+    assert event_summary('SPR', 'SanMarinoGP') == 'San Marino — MotoGP Sprint'
+
+
+def test_summaries_carry_no_emoji(events):
+    for summary in summaries(events):
+        assert summary.isascii() or all(
+            ord(char) < 0x2500 for char in summary)
 
 
 def test_numbered_race_code_survives_the_filter(events):
@@ -72,7 +90,7 @@ def test_numbered_race_code_survives_the_filter(events):
 
 def test_numbered_race_code_is_normalized(events):
     rac2 = [e for e in events if str(e['uid']) == 'uid-rac2'][0]
-    assert str(rac2['summary']) == '🏍 Carrera — Catalunya'
+    assert str(rac2['summary']) == 'Catalunya — MotoGP'
 
 
 def test_normalize_session_code_only_touches_races():
@@ -107,8 +125,7 @@ def test_alarm_description_is_the_rewritten_summary(events):
 
 
 def test_uid_is_preserved(events):
-    assert [str(event['uid']) for event in events] == [
-        'uid-q2', 'uid-spr', 'uid-rac', 'uid-rac2']
+    assert [str(event['uid']) for event in events] == ['uid-rac', 'uid-rac2']
 
 
 def test_upstream_fields_are_preserved(events):
@@ -125,7 +142,7 @@ def test_upstream_fields_are_preserved(events):
 def test_unknown_gp_tag_falls_back_to_the_tag_itself():
     events = transform_events(upstream_calendar(
         upstream_event('RAC', 'NewPlaceGP', 'uid-new')))
-    assert str(events[0]['summary']) == '🏍 Carrera — New Place'
+    assert str(events[0]['summary']) == 'New Place — MotoGP'
 
 
 def test_unrecognized_summary_is_skipped():
@@ -154,7 +171,7 @@ def test_build_sets_calendar_metadata():
     assert isinstance(calendar, Calendar)
     assert str(calendar['x-wr-calname']) == 'MotoGP'
     assert calendar['refresh-interval'].dt == timedelta(hours=12)
-    assert len(calendar.walk('VEVENT')) == 4
+    assert len(calendar.walk('VEVENT')) == 2
 
 
 def test_build_merges_every_published_season():
@@ -170,7 +187,7 @@ def test_build_merges_every_published_season():
 
     uids = [str(event['uid']) for event in calendar.walk('VEVENT')]
     assert 'uid-2027' in uids
-    assert len(uids) == 5
+    assert len(uids) == 3
 
 
 def test_build_tolerates_an_unpublished_next_season():
@@ -185,7 +202,7 @@ def test_build_tolerates_an_unpublished_next_season():
                              2027 if '2027' in url else 2026]):
         calendar = build()
 
-    assert len(calendar.walk('VEVENT')) == 4
+    assert len(calendar.walk('VEVENT')) == 2
 
 
 def test_build_fails_instead_of_publishing_an_empty_calendar():
